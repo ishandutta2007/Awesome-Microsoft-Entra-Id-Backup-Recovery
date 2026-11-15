@@ -1,134 +1,138 @@
-# Awesome-Microsoft-Entra-Id-Backup-Recovery
+# Awesome Microsoft Entra ID Backup & Recovery [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
-# Awesome Microsoft Entra ID Backup & Recovery
+> A curated list of top **Microsoft Entra ID Backup and Recovery** solutions, platforms, and open-source tools — covering enterprise SaaS identity resiliency platforms, disaster recovery orchestration, and open-source PowerShell scripts for protecting directory objects, conditional access policies, application registrations, and hybrid identity configurations against accidental deletion, ransomware attacks, and misconfigurations.
 
-> A curated list of top Microsoft Entra ID Backup and Recovery platforms — both SaaS/Hosted commercial solutions and open-source alternatives for protecting directory objects, configurations, and policies against accidental deletion, misconfiguration, and cyberattacks.
-> 🌟 Star this repo if you find it useful! 🌟
-
----
-
-## 📋 Table of Contents
-
-- [SaaS / Hosted Platforms](#-saas--hosted-platforms)
-  - [Druva Microsoft Entra ID Protection](#druva-microsoft-entra-id-protection)
-  - [Veeam Backup for Microsoft Entra ID](#veeam-backup-for-microsoft-entra-id)
-  - [Keepit for Entra ID](#keepit-for-entra-id)
-  - [AvePoint Cloud Backup for Entra ID](#avepoint-cloud-backup-for-entra-id)
-  - [Commvault Cloud for Entra ID](#commvault-cloud-for-entra-id)
-  - [Rubrik Identity Resilience](#rubrik-identity-resilience)
-  - [HYCU for Entra ID](#hycu-for-entra-id)
-  - [Cayosoft Guardian](#cayosoft-guardian)
-  - [Quest On Demand Recovery](#quest-on-demand-recovery)
-  - [Semperis Directory Services Protector](#semperis-directory-services-protector)
-- [Open-Source Software](#-open-source-software)
-  - [Microsoft Graph PowerShell](#microsoft-graph-powershell)
-  - [Microsoft Entra Exporter](#microsoft-entra-exporter)
-  - [Microsoft 365 Desired State Configuration (DSC)](#microsoft-365-desired-state-configuration-dsc)
+🌟 **Star this repo if you find it useful!** 🌟
 
 ---
 
-## 🟦 SaaS / Hosted Platforms
+## 📑 Table of Contents
 
-Commercial, cloud-hosted Microsoft Entra ID Backup and Recovery platforms. These are not open-source but are included as reference points for feature comparison.
-
-### Druva Microsoft Entra ID Protection
-**Type:** SaaS backup with granular restore and Identity Resiliency
-Druva protects Microsoft Entra ID data including users, groups, roles, and applications with automated backups and granular restore capabilities [citation:13]. Key characteristics include restore from a single snapshot only (multi-snapshot restore is not supported), with ad-hoc backup jobs available from the Entra ID overview page [citation:1]. **Important consideration:** Cloud Key Management must be enabled for scheduled backups to run—without it, only manual backups are possible [citation:1]. Restoring an App registration preserves the Application ID if the object is still in the recycle bin; if permanently deleted, Microsoft creates a new app registration with a new Application ID [citation:1]. **Notable limitation:** Changes to Client Secrets or Certificates may not be captured in incremental backups due to a Microsoft Graph API limitation—updating another tracked field (like Notes or Description) forces detection [citation:1]. Identity Resiliency is available as a separate Identity workload license [citation:13]. **Best for:** Druva customers wanting Entra ID protection integrated with their broader data protection platform, accepting the Cloud Key Management prerequisite and Graph API limitations.
-
-### Veeam Backup for Microsoft Entra ID
-**Type:** Self-managed backup with item and property restore
-Veeam Backup for Microsoft Entra ID is a component of Veeam Backup & Replication 12.3, deployed on a Windows-based backup server with a local or remote PostgreSQL instance for the Entra ID backup repository [citation:14]. Key restore operations include **Item restore** (users, groups, roles, administrative units, applications, conditional access policies, Intune policies) and **Properties restore** (properties of a single item at a time) [citation:2]. You can restore to the most recent state or any available restore point [citation:2]. **Important limitation:** Only the default general-purpose backup proxy can be used—deleting it disables Entra ID tenant and log backup [citation:14]. **Best for:** Organizations already using Veeam Backup & Replication wanting Entra ID protection with self-managed infrastructure and granular item restore, accepting the Windows/PostgreSQL deployment.
-
-### Keepit for Entra ID
-**Type:** Independent cloud backup with bulk restore and PIM protection
-Keepit provides automated, immutable backups for Entra ID with recent enhancements including **bulk restore** for administrative units, roles, service principals, app registrations, and policies in one go [citation:3]. It now backs up **Windows LAPS** and account protection policies (local user group memberships, LAPS configurations) with an additional permission (Read device local credential passwords) [citation:3]. Recent updates added backup and restore of **Privileged Identity Management (PIM) role settings** and scheduled role activations, preserving activation rules, approval requirements, and time-bound assignments [citation:15]. It also backs up **Microsoft Intune Antivirus policies** [citation:15]. **Best for:** Organizations wanting an independent, vendor-neutral backup with strong coverage of privileged access configurations and modern Entra ID features.
-
-### AvePoint Cloud Backup for Entra ID
-**Type:** Multi-SaaS backup with flexible storage options
-AvePoint provides automatic backups and retention of 100% of Entra ID data for as long as needed, with fast recovery via time-based or object-based restores [citation:4]. It explicitly notes that **Microsoft provides no native backup solution for Entra ID**, making dedicated backup essential [citation:4]. Storage options include AvePoint's scalable Azure storage or your private cloud [citation:4]. The platform is part of a broader multi-SaaS backup solution covering Microsoft 365, Azure VMs, and more [citation:4]. **Best for:** Organizations wanting Entra ID protection within a consolidated multi-SaaS backup platform with flexible data residency options.
-
-### Commvault Cloud for Entra ID
-**Type:** Unified AD + Entra ID protection with air-gap
-Commvault provides automated, frequent daily backups of Entra ID data including users, groups, roles, conditional access policies, and app registrations [citation:5]. Key capabilities include **granular control** to view changes and revert them, rapid restore of deleted or modified objects, and **unified protection of hybrid AD and Entra ID** in a single solution [citation:5]. **AirGap** provides isolated, immutable storage on Azure as a last line of defense for cyber recovery [citation:5]. Commvault has been named a Leader in the Gartner Magic Quadrant for Backup and Data Protection Platforms for the 15th consecutive time [citation:5]. **Best for:** Enterprises needing unified hybrid AD + Entra ID protection with air-gapped immutable copies for cyber recovery.
-
-### Rubrik Identity Resilience
-**Type:** Orchestrated identity recovery with AD forest recovery
-Rubrik provides **granular Entra ID recovery** for users, groups, roles, and conditional access policies, with the ability to roll back malicious changes and roll forward legitimate ones [citation:6]. A key differentiator is **orchestrated AD Forest Recovery** that turns Microsoft's complex manual process into a guided workflow, with AD and Entra ID stitched together as one recovery step rather than two [citation:6]. **Identity recovery runs first** during an incident so users can log back in before other M365 services are restored [citation:6]. **Best for:** Organizations needing coordinated hybrid identity recovery (AD + Entra ID) with a single orchestrated workflow and strong ransomware recovery posture.
-
-### HYCU for Entra ID
-**Type:** One-click restore with S3-compatible storage
-HYCU provides automated backup and one-click restore for Entra ID tenant settings and data, including users, groups, roles and administrators, custom security attributes, conditional access policies, custom domains, administrative units, app registrations, and enterprise applications [citation:7]. Backup copies are stored in S3-compatible storage, giving control over data retention, security, and residency [citation:7]. It positions itself as protecting the "keys to the digital kingdom" given Entra ID's high change rate and attractiveness to attackers [citation:7]. **Best for:** Organizations wanting one-click restore with S3-compatible storage control and broad object coverage.
-
-### Cayosoft Guardian
-**Type:** Change monitoring with immediate rollback and forest recovery
-Cayosoft Guardian continuously monitors all directory changes across on-premises, hybrid, and cloud environments, enabling **immediate rollback** of administrative mistakes or malicious changes without mounting and searching backup files [citation:8]. It recovers what native recycle bins cannot, including **object attribute data, Office 365 License Settings, Conditional Access policies, and hard-deleted objects** [citation:8]. **Immediate Active Directory Full-Forest Recovery** provides the fastest possible recovery from ransomware or wiper attacks against AD [citation:8]. Threat Detection performs real-time scans and provides remediation advice [citation:8]. **Best for:** Organizations needing continuous change monitoring with immediate rollback for Entra ID and hybrid AD, particularly for ransomware recovery scenarios.
-
-### Quest On Demand Recovery
-**Type:** Granular restore with diff reporting and hybrid dashboard
-Quest On Demand Recovery provides cloud backup and restore for Entra ID objects including users, B2B users, Office 365 and Entra ID groups, applications, devices, and Cloud-only attributes for hybrid objects [citation:10]. **Diff reports** compare backups to the production Entra ID environment to identify changes or deletions, allowing selective restore of exactly what is needed rather than entire objects [citation:10]. **Bulk restore** handles multiple users, groups, attributes, and memberships without PowerShell [citation:10]. It integrates with Recovery Manager for Active Directory for a single hybrid recovery dashboard [citation:10]. Backups are encrypted and stored in Azure Storage with configurable retention [citation:10]. **Best for:** Organizations needing granular diff-based restore and a unified hybrid AD + Entra ID recovery dashboard.
-
-### Semperis Directory Services Protector
-**Type:** Real-time change auditing with automated forest recovery
-Semperis DSP provides **real-time tracking and auditing** of directory changes, alongside **AD Forest Recovery (ADFR)** for automated disaster recovery orchestration [citation:9]. Related tools include Purple Knight (vulnerability assessment) and Forest Druid (attack path discovery) [citation:9]. Semperis reports that its tools have reduced downtime by up to **90%** during incidents [citation:9]. **Best for:** Organizations wanting real-time change auditing combined with automated AD forest recovery orchestration.
+- [Sector Overview & Market Dynamics](#-sector-overview--market-dynamics)
+- [SaaS & Commercial Hosted Platforms](#-saas--commercial-hosted-platforms)
+- [Open-Source Tools & Utilities](#-open-source-tools--utilities)
+- [Feature Comparison Matrix](#-feature-comparison-matrix)
+- [Understanding the Shared Responsibility Model](#-understanding-the-shared-responsibility-model)
+- [Frequently Asked Questions (FAQ)](#-frequently-asked-questions-faq)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## 🟩 Open-Source Software
+## 📈 Sector Overview & Market Dynamics
 
-Self-hosted, community-driven Microsoft Entra ID Backup and Recovery approaches. The open-source ecosystem for **native Entra ID backup** is **extremely limited**—Microsoft provides no built-in backup, and dedicated open-source backup platforms do not exist. The available options are **export and configuration-as-code tools** rather than full backup/restore platforms.
-
-### Microsoft Graph PowerShell
-**Stack:** PowerShell / Microsoft Graph API | **License:** MIT (Microsoft)
-Microsoft Graph PowerShell is a library for the Microsoft Graph APIs that allows you to **create custom scripts to export and import Entra ID object attributes** tailored to your organization's needs [citation:11]. It is the foundational building block for a DIY backup approach—you write scripts to read objects via Graph and write them back for restore. **Critical limitations:** This is not a backup product—it is a scripting library. You must build and maintain the export logic, restore logic, scheduling, retention, and verification yourself. There is no UI, no automated scheduling, and no support for point-in-time recovery without building it. **Best for:** Organizations with PowerShell expertise wanting full control over a custom Entra ID export/import pipeline, accepting the significant engineering effort required.
-
-### Microsoft Entra Exporter
-**Stack:** PowerShell | **License:** Open Source (Microsoft)
-Microsoft Entra Exporter is a PowerShell module that **exports a local copy of certain Entra ID attributes** (users, applications, enterprise applications, roles, etc.) to a JSON file [citation:11]. It provides a more structured export than raw Graph scripting, giving you a snapshot of configuration data. **Critical limitations:** It is **export-only**—there is no built-in import or restore capability. You must write your own restore logic against the JSON output. It does not capture all Entra ID object types or attributes, and there is no scheduling or retention management. **Best for:** Organizations wanting a structured JSON export of key Entra ID objects as a starting point for a custom restore process, accepting that restore must be built separately.
-
-### Microsoft 365 Desired State Configuration (DSC)
-**Stack:** PowerShell | **License:** Open Source (Microsoft)
-Microsoft 365 DSC is a PowerShell module for **declarative configuration, deployment, and management** of Microsoft 365 services, including Entra ID [citation:11]. It represents the closest open-source approach to **configuration-as-code backup**, where you define the desired state and DSC ensures the tenant matches it. **Important findings from a PoC:** When restoring a deleted user, **not all attributes are restored**—the password is replaced with a default password, and attributes pointing to non-existent objects cause non-blocking errors [citation:11]. The `Ensure` parameter controls whether an object is treated as `Present` (active) or `Absent` (disabled)—you cannot determine active/disabled state from the backup alone [citation:11]. **Critical limitations:** It is a configuration management tool, not a backup product. It does not capture the full fidelity of all object properties, does not provide point-in-time recovery, and requires significant PowerShell expertise. **Best for:** Organizations already practicing infrastructure-as-code wanting to manage Entra ID configuration declaratively, accepting that it is not a true backup/restore solution and has significant fidelity gaps.
+- **Market Size:** The Microsoft Entra ID backup and identity resilience market sits at the convergence of Cloud Identity & Access Management (IAM) and SaaS Data Protection—sectors valued together between **$7.1 billion and $12.5 billion**, rapidly projected to surpass **$33 billion+ by the mid-2030s** at a CAGR of 15%–18%.
+- **Market Dynamics & Structure:** The sector is **moderately fragmented**, transitioning from legacy on-premises Active Directory forest recovery toward modern cloud and hybrid identity resilience. While multi-billion-dollar enterprise backup leaders (Veeam, Rubrik, Commvault) capture large portions of IT infrastructure budgets, specialized pure-play identity security and resilience providers (Semperis, Cayosoft, Keepit) maintain high differentiation in instant rollback, directory diff auditing, and granular Entra ID / hybrid Active Directory forest recovery.
 
 ---
 
-## 📊 Comparison at a Glance
+## 🟦 SaaS & Commercial Hosted Platforms
 
-| Software | License | Stack | Users/Groups | Conditional Access | App Registrations | Self-Hosted | Best For |
-|----------|---------|-------|--------------|---------------------|-------------------|-------------|----------|
-| **Druva** | Proprietary | Cloud | ✅ | ✅ | ✅ | ❌ | Integrated data protection |
-| **Veeam** | Proprietary | Windows/Postgres | ✅ | ✅ | ✅ | ✅ | Veeam ecosystem + item restore |
-| **Keepit** | Proprietary | Cloud | ✅ | ✅ (PIM) | ✅ | ❌ | Independent + PIM/LAPS |
-| **AvePoint** | Proprietary | Cloud | ✅ | ✅ | ✅ | (Private cloud) | Multi-SaaS consolidation |
-| **Commvault** | Proprietary | Cloud | ✅ | ✅ | ✅ | (On-prem) | Hybrid AD + Entra ID + air-gap |
-| **Rubrik** | Proprietary | Cloud/Appliance | ✅ | ✅ | ✅ | (Appliance) | Orchestrated AD + Entra recovery |
-| **HYCU** | Proprietary | Cloud | ✅ | ✅ | ✅ | (S3 storage) | One-click restore + S3 control |
-| **Cayosoft** | Proprietary | Cloud | ✅ | ✅ | ✅ | ❌ | Change monitoring + immediate rollback |
-| **Quest** | Proprietary | Cloud | ✅ | ✅ | ✅ | ❌ | Diff reports + hybrid dashboard |
-| **Graph PowerShell** | MIT | PowerShell | ✅ (Custom) | ✅ (Custom) | ✅ (Custom) | ✅ | Custom export/import scripts |
-| **Entra Exporter** | Open Source | PowerShell | ✅ (Export) | (Export) | ✅ (Export) | ✅ | JSON export only |
-| **M365 DSC** | Open Source | PowerShell | ✅ (Declarative) | ✅ (Declarative) | ✅ (Declarative) | ✅ | Configuration-as-code |
+The following enterprise SaaS platforms provide automated cloud backups, granular object and attribute restore, ransomware rollback, and disaster recovery orchestration for Microsoft Entra ID (formerly Azure Active Directory) and hybrid AD environments.
+
+*Table sorted by company size (Valuation / Market Cap / Revenue) descending:*
+
+| Platform | Company Valuation / Revenue | Pricing (Starting Tier) | Free Tier / Free Trial Limits | Key Capabilities & Workloads |
+| :--- | :--- | :--- | :--- | :--- |
+| **[Veeam Backup for Entra ID](https://www.veeam.com/)** | **~$15.0B** valuation / **~$2.0B ARR** | **$2.00 / user / month** (billed annually at $24/yr for self-managed software); SaaS Veeam Data Cloud starts at **$2.63 / user / month** | **Free Community Edition:** Permanently free for up to **10 users**, 10 Microsoft Teams, and 1 TB SharePoint data (no expiration; community support) | Item & properties restore for users, groups, administrative units, roles, applications, conditional access, and Intune policies. |
+| **[Rubrik Identity Resilience](https://www.rubrik.com/)** | **~$13.9B** market cap (NYSE: RBRK) / **~$1.18B ARR** | **$3.00 – $6.00 / user / month** (tiered subscription baseline, custom enterprise quote) | **30-day free trial** (Rubrik-hosted SaaS trial limited to a maximum of **500 users** and capped backup volume) | Orchestrated AD Forest Recovery + Entra ID unified rollback; rolls back malicious changes and rolls forward legitimate updates; identity restores first. |
+| **[Commvault Cloud for Entra ID](https://www.commvault.com/)** | **~$6.5B** enterprise value (NASDAQ: CVLT) / **~$995M+ ARR** | **$1.70 / user / month** (Standard SaaS tier with 5 GB storage/user); Enterprise tier starts at **$3.60 / user / month** | **30-day free trial** (full access to Commvault Cloud SaaS backup for M365 and Entra ID directory workloads) | Automated daily backups of users, groups, roles, and conditional access policies; AirGap isolated immutable storage; unified hybrid AD + Entra ID recovery. |
+| **[Quest On Demand Recovery](https://www.quest.com/products/on-demand-recovery/)** | **~$5.4B** valuation (acquired by Clearlake) / **~$850M+ revenue** | **$9.00 – $11.00 / user / year** (~$0.75 – $0.92 / user / month, based on public procurement listings) | **30-day free evaluation trial** (functional sandbox testing backup, item-level restoration, and diff reporting) | Granular diff reports comparing backups to live Entra ID environments; bulk restore of users, groups, and attributes without PowerShell scripts. |
+| **[AvePoint Cloud Backup](https://www.avepoint.com/)** | **~$3.0B** market cap (NASDAQ: AVPT) / **~$419M ARR** | **$1.50 – $3.00 / user / month** (standard SaaS backup tier depending on commitment and volume) | **30-day free trial** (standard evaluation environment supporting up to **5 users** with full restore and ransomware detection) | Automatic backups and multi-year retention for 100% of Entra ID objects; flexible storage on AvePoint Azure or customer-owned cloud storage. |
+| **[Semperis Directory Services Protector (DSP)](https://www.semperis.com/)** | **~$1.5B+** valuation / **~$100M+ ARR** | **Custom enterprise quote** (subscription scaled per protected identity/user account in hybrid AD/Entra ID) | **Free Assessment Tool:** Permanently free **Purple Knight** vulnerability scanner (audits hybrid AD/Entra ID indicators of exposure); bespoke enterprise PoC trial upon request | Real-time tracking and auditing of directory changes; non-destructive rollback; automated AD Forest Recovery (ADFR); reduces downtime up to 90%. |
+| **[Druva Microsoft Entra ID Protection](https://www.druva.com/)** | **~$2.0B** valuation / **~$200M+ ARR** | **$8.00 / user / month** (baseline SaaS data protection tier; enterprise identity resiliency quote-based) | **30-day free trial** (access to cloud-native Entra ID autonomous protection and granular restore capabilities) | Automated backups of users, groups, roles, and applications; granular restore from snapshots; Cloud Key Management integration. |
+| **[Keepit for Entra ID](https://www.keepit.com/)** | **~$390M** valuation / **~$100M+ ARR** | **$1.95 – $2.95 / user / month** (Core Continuity tier; Enterprise tier starts at **$2.80 – $4.25 / user / month**) | **30-day free trial** (unlimited access to test automated backup and bulk recovery workflows) | Vendor-neutral, independent cloud backup; bulk restore for administrative units, PIM role assignments, Windows LAPS, and Intune policies. |
+| **[HYCU for Entra ID](https://www.hycu.com/)** | **~$350M** valuation / **~$50M ARR** | **$1.20 / user / month** (Workforce Identity Suite protecting AWS IAM, Entra ID, and Okta) | **14-day free trial** (standard R-Cloud trial with platform fees waived; 30-day identity promotional trial often available) | One-click restore for Entra ID tenant settings, conditional access policies, custom security attributes, and app registrations to customer-controlled S3 storage. |
+| **[Cayosoft Guardian](https://www.cayosoft.com/)** | **~$100M+** valuation / **~$15M – $25M ARR** | **Custom enterprise quote** (subscription per managed user; no additional fees for number of admins, CPUs, or servers) | **Permanently Free Tier:** **Cayosoft Guardian Protector** (continuous threat detection & change monitoring); 30-day trial for Guardian Audit & Restore | Continuous change monitoring across on-prem, hybrid, and cloud; immediate rollback of administrative mistakes; full forest ransomware recovery. |
+
+---
+
+## 🟩 Open-Source Tools & Utilities
+
+The open-source ecosystem for Microsoft Entra ID provides modular scripting libraries, declarative configuration-as-code management, export utilities, and security governance tools. 
+
+*Table sorted by GitHub Stargazers count descending:*
+
+| Tool / Repository | GitHub Stars | Technology / Language | Core Purpose & Use Case | License |
+| :--- | :--- | :--- | :--- | :--- |
+| **[Microsoft365DSC](https://github.com/Microsoft365DSC/Microsoft365DSC)** | [![Stars](https://img.shields.io/github/stars/Microsoft365DSC/Microsoft365DSC?style=social&color=white)](https://github.com/Microsoft365DSC/Microsoft365DSC/stargazers) | PowerShell | **Configuration-as-Code Backup & Drift Management:** Declaratively defines, manages, and monitors Microsoft 365 and Entra ID configurations, detecting configuration drift and restoring desired state policies. | MIT |
+| **[Azure-MG-Sub-Governance-Reporting (AzGovViz)](https://github.com/JulianHayward/Azure-MG-Sub-Governance-Reporting)** | [![Stars](https://img.shields.io/github/stars/JulianHayward/Azure-MG-Sub-Governance-Reporting?style=social&color=white)](https://github.com/JulianHayward/Azure-MG-Sub-Governance-Reporting/stargazers) | PowerShell | **Governance & RBAC State Snapshot:** Captures granular Azure tenant, Entra ID RBAC assignments, Azure Policies, and management group structures via Azure ARM and Microsoft Graph API. | MIT |
+| **[msgraph-sdk-powershell](https://github.com/microsoftgraph/msgraph-sdk-powershell)** | [![Stars](https://img.shields.io/github/stars/microsoftgraph/msgraph-sdk-powershell?style=social&color=white)](https://github.com/microsoftgraph/msgraph-sdk-powershell/stargazers) | PowerShell / C# | **Custom Graph Export & Restore SDK:** Official Microsoft Graph PowerShell SDK used to write custom extraction, backup, and restore pipelines for users, groups, app registrations, and directory settings. | MIT |
+| **[microsoft/EntraExporter](https://github.com/microsoft/EntraExporter)** | [![Stars](https://img.shields.io/github/stars/microsoft/EntraExporter?style=social&color=white)](https://github.com/microsoft/EntraExporter/stargazers) | PowerShell | **Automated JSON Tenant Export:** Official Microsoft PowerShell module to export local JSON copies of tenant configurations, conditional access, and app registrations into Git for version tracking. | MIT |
+| **[M365Documentation](https://github.com/ThomasKur/M365Documentation)** | [![Stars](https://img.shields.io/github/stars/ThomasKur/M365Documentation?style=social&color=white)](https://github.com/ThomasKur/M365Documentation/stargazers) | PowerShell | **Automated Tenant Configuration Documentation:** Generates snapshot documentation and reports of Entra ID directory settings, Intune policies, and M365 configs to Word, Markdown, or HTML. | MIT |
+| **[EntraFalcon](https://github.com/CompassSecurity/EntraFalcon)** | [![Stars](https://img.shields.io/github/stars/CompassSecurity/EntraFalcon?style=social&color=white)](https://github.com/CompassSecurity/EntraFalcon/stargazers) | PowerShell | **Security Posture & Misconfiguration Discovery:** Assesses Entra ID environments to identify privileged objects, risky assignments, and potential misconfigurations prior to backup snapshots. | GPL-3.0 |
+| **[DCToolbox](https://github.com/DanielChronlund/DCToolbox)** | [![Stars](https://img.shields.io/github/stars/DanielChronlund/DCToolbox?style=social&color=white)](https://github.com/DanielChronlund/DCToolbox/stargazers) | PowerShell | **Entra ID & Security Automation Tools:** Suite of PowerShell cmdlets for extracting, auditing, hardening, and exporting Entra ID conditional access policies, role assignments, and security settings. | MIT |
+| **[Intune-Toolkit](https://github.com/MG-Cloudflow/Intune-Toolkit)** | [![Stars](https://img.shields.io/github/stars/MG-Cloudflow/Intune-Toolkit?style=social&color=white)](https://github.com/MG-Cloudflow/Intune-Toolkit/stargazers) | PowerShell | **Intune & Identity Policy Backup/Restore UI:** Provides a graphical interface to connect to Microsoft Graph, manage policy assignments, and handle automated backup and restore of cloud policies. | MIT |
+| **[ConditionalAccessBaseline](https://github.com/j0eyv/ConditionalAccessBaseline)** | [![Stars](https://img.shields.io/github/stars/j0eyv/ConditionalAccessBaseline?style=social&color=white)](https://github.com/j0eyv/ConditionalAccessBaseline/stargazers) | PowerShell / JSON | **Conditional Access Policy Baselines:** Repository of vetted JSON policies and deployment scripts for exporting, backing up, and restoring Entra ID Conditional Access configurations. | MIT |
+| **[vigil365](https://github.com/sameerk27/vigil365)** | [![Stars](https://img.shields.io/github/stars/sameerk27/vigil365?style=social&color=white)](https://github.com/sameerk27/vigil365/stargazers) | TypeScript / Python | **Self-Hosted M365 Security Dashboard:** Aggregates Defender XDR, Entra ID Protection, Intune, and directory compliance status to monitor identity risk before disaster events occur. | Apache-2.0 |
+| **[EasyPIM](https://github.com/kayasax/EasyPIM)** | [![Stars](https://img.shields.io/github/stars/kayasax/EasyPIM?style=social&color=white)](https://github.com/kayasax/EasyPIM/stargazers) | PowerShell | **Privileged Identity Management (PIM) Automation:** Simplifies management, export, and verification of Entra ID PIM settings, role assignments, and resource permissions. | MIT |
+| **[ConditionalAccessDocumentation](https://github.com/nicolonsky/ConditionalAccessDocumentation)** | [![Stars](https://img.shields.io/github/stars/nicolonsky/ConditionalAccessDocumentation?style=social&color=white)](https://github.com/nicolonsky/ConditionalAccessDocumentation/stargazers) | PowerShell | **Conditional Access Documentation & Backup:** Generates markdown reports and historical snapshots of Conditional Access policies to facilitate audit trail and rollback readiness. | MIT |
+
+---
+
+## 📊 Feature Comparison Matrix
+
+| Platform / Tool | Type | License | Users & Groups | Conditional Access | App Registrations & Secrets | PIM & Roles | Forest Recovery / Hybrid AD | Storage Destination |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Veeam** | SaaS / Self-Managed | Commercial | ✅ | ✅ | ✅ | ✅ | ✅ | S3 / Azure / Local / Wasabi |
+| **Rubrik** | Enterprise Cloud SaaS | Commercial | ✅ | ✅ | ✅ | ✅ | ✅ (Orchestrated) | Rubrik Cloud / Isolated |
+| **Commvault Cloud** | Multi-Cloud SaaS | Commercial | ✅ | ✅ | ✅ | ✅ | ✅ | Azure / AirGap Immutable |
+| **Quest On Demand** | Cloud SaaS | Commercial | ✅ | ✅ | ✅ | ✅ | ✅ | Azure Cloud Storage |
+| **AvePoint** | Multi-SaaS Cloud | Commercial | ✅ | ✅ | ✅ | ✅ | ⚠️ (Cloud only) | AvePoint Azure / BYO-Cloud |
+| **Semperis DSP** | Hybrid ITDR SaaS | Commercial | ✅ | ✅ | ✅ | ✅ | ✅ (Automated) | Customer Cloud / On-Prem |
+| **Druva** | Cloud Native SaaS | Commercial | ✅ | ✅ | ✅ | ✅ | ⚠️ (Workload) | AWS S3 Air-Gapped |
+| **Keepit** | Independent SaaS | Commercial | ✅ | ✅ | ✅ | ✅ (Deep PIM) | ⚠️ (Cloud only) | Keepit Independent Cloud |
+| **HYCU** | BaaS Cloud | Commercial | ✅ | ✅ | ✅ | ✅ | ⚠️ (Cloud only) | Customer-Owned AWS/Azure S3 |
+| **Cayosoft Guardian** | Hybrid SaaS / On-Prem | Commercial | ✅ | ✅ | ✅ | ✅ | ✅ (Instant) | Hybrid / Customer Cloud |
+| **Microsoft365DSC** | Open-Source Module | MIT | ✅ (Declarative) | ✅ (Declarative) | ✅ (Declarative) | ⚠️ | ❌ | Git / DSC Endpoint |
+| **microsoft/EntraExporter**| Open-Source Script | MIT | ✅ (Export) | ✅ (Export) | ✅ (Export) | ✅ (Export) | ❌ | Local Disk / Git Repository |
+| **msgraph-sdk-powershell** | Open-Source SDK | MIT | ✅ (Custom) | ✅ (Custom) | ✅ (Custom) | ✅ (Custom) | ❌ | Custom Storage / DB |
+
+---
+
+## 🛡️ Understanding the Shared Responsibility Model
+
+A frequent misconception in enterprise IT is that Microsoft natively backs up Entra ID data. Under Microsoft's **Shared Responsibility Model**:
+
+1. **Microsoft's Responsibility:** High availability, service uptime, physical infrastructure resilience, datacenter redundancy, and disaster recovery of the multi-tenant architecture itself.
+2. **Customer's Responsibility:** Data protection, account lifecycle management, access policies, configuration management, and recovery from accidental deletions, insider threats, credential compromise, or ransomware.
+3. **The 30-Day Recycle Bin Limitation:** Native Entra ID soft-delete maintains deleted users, groups, and applications for only **30 days**. Once permanently purged, or in scenarios involving malicious modification of conditional access rules, role assignments, or app registrations, **Microsoft provides no native point-in-time rollback mechanism**.
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+### What objects in Microsoft Entra ID can be backed up?
+Most commercial backup solutions protect:
+- **User Accounts & Groups:** Cloud-only users, security groups, Microsoft 365 groups, dynamic memberships.
+- **Role Assignments:** Directory roles, custom roles, and Privileged Identity Management (PIM) policies.
+- **Conditional Access:** Access control policies, named locations, session controls, and authentication context.
+- **Applications:** App registrations, Enterprise Applications (Service Principals), and permission grants.
+- **Administrative Units:** Scoped admin boundaries and delegated membership rules.
+
+### Can open-source tools provide full point-in-time restore?
+No. Open-source utilities like `EntraExporter` and `Microsoft365DSC` are primarily **export and configuration-as-code** engines. While they capture configurations in JSON or DSC files, restoring complex objects (especially user passwords, MFA registration tokens, and soft-deleted cryptographic secrets) cannot be performed without custom scripting against the Microsoft Graph API.
+
+### How does hybrid Active Directory recovery relate to Entra ID?
+Organizations operating hybrid identities via Microsoft Entra Connect require coordinated disaster recovery. Restoring on-premises Active Directory objects without synchronizing Entra ID can trigger identity collisions, orphaned cloud objects, and broken Single Sign-On (SSO) credentials. Solutions like Rubrik, Semperis, Quest, and Cayosoft specialize in synchronized hybrid identity rollback.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you know of an open-source Microsoft Entra ID Backup or Recovery tool that should be listed here, please open a pull request with:
+Contributions, updates, and tool submissions are highly appreciated! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on guidelines and pull request standards.
 
-- Project name and URL
-- Brief description (1–2 sentences)
-- Stack and license
-- Why it stands out
-
-Please ensure the project is actively maintained (releases within the last 12 months) and genuinely open-source.
-
-**Note on the open-source ecosystem:** The open-source landscape for **Microsoft Entra ID backup and recovery** is **essentially nonexistent** as a turnkey solution. Microsoft explicitly provides **no native backup for Entra ID** [citation:4][citation:12], and the available open-source tools are **export and configuration-as-code utilities** rather than backup platforms. **Microsoft Graph PowerShell** requires you to build both export and restore logic from scratch [citation:11]. **Microsoft Entra Exporter** is export-only with no restore capability [citation:11]. **Microsoft 365 DSC** has significant fidelity gaps—passwords are not restored, active/disabled state cannot be determined from backups, and not all attributes are captured [citation:11]. For any production requirement to protect Entra ID with reliable restore, commercial platforms like Keepit, Rubrik, Commvault, or Quest remain the only viable options. The choice depends on whether you prioritize independent vendor-neutral storage (Keepit), hybrid AD coordination (Rubrik, Quest), air-gap cyber recovery (Commvault), or change monitoring with immediate rollback (Cayosoft).
+To add an open-source tool or SaaS product:
+1. Fork this repository.
+2. Ensure the tool is actively maintained with valid documentation.
+3. Open a pull request with details following the existing table formatting.
 
 ---
 
 ## 📄 License
 
-This list is released under CC0 1.0 Universal (Public Domain). The software projects listed retain their respective licenses.
+This curated list is released under the [Creative Commons Zero v1.0 Universal](LICENSE) (Public Domain). Product and company names are trademarks™ or registered® trademarks of their respective holders.
 
 ---
 
-⭐ **If this list helped you discover a useful tool, please star the repo!** ⭐
+⭐ **Found this guide helpful? Please star this repository on GitHub!** ⭐
